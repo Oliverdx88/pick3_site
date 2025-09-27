@@ -84,9 +84,19 @@
     <p><a href="/privacy">Privacy</a> • <a href="/terms">Terms</a></p>
 
     <script>
-      const stripe = Stripe("{{ publishable_key }}");
+      let stripe;
+      
+      // Initialize Stripe when the page loads
+      document.addEventListener('DOMContentLoaded', function() {
+        stripe = Stripe("{{ publishable_key }}");
+      });
       
       async function subscribe(plan) {
+        if (!stripe) {
+          alert("Stripe is not initialized. Please refresh the page.");
+          return;
+        }
+        
         const res = await fetch(`/create-checkout-session/${plan}`, { method: "POST" });
         const data = await res.json();
         if (data.id) {
@@ -98,4 +108,5 @@
       }
     </script>
   </body>
+</html>
 </html>
