@@ -51,6 +51,30 @@ def create_app():
     def health():
         return jsonify(status="ok")
 
+    @app.post("/email/test")
+    def test_email():
+        """Test endpoint to verify Mailgun is working"""
+        data = request.get_json()
+        to_email = data.get("to") if data else "test@example.com"
+        
+        try:
+            response = send_email(
+                app, 
+                to=to_email,
+                subject="Mailgun Test - Pick3 App",
+                text="This is a test email from your Pick3 app. Mailgun is working correctly!"
+            )
+            return jsonify({
+                "status": "success", 
+                "message": "Test email sent successfully",
+                "response_status": response.status_code
+            })
+        except Exception as e:
+            return jsonify({
+                "status": "error", 
+                "message": f"Failed to send test email: {str(e)}"
+            }), 500
+
     @app.get("/")
     def index():
         email = session.get("user_email")
